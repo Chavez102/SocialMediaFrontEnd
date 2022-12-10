@@ -5,7 +5,8 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Building..'
-          sh 'npm install --verbose'
+        sh 'ls'
+          sh 'npx npm@6 install --verbose'
         } 
       }
     
