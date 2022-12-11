@@ -7,7 +7,6 @@ pipeline {
         echo 'Building..'
         sh 'ls'
           sh 'npx npm@6 install --verbose'
-          sh 'ng build'
         } 
       }
     
