@@ -5,7 +5,8 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Building..'
-          sh 'npm install'
+        sh 'ls'
+          sh 'npx npm@6 install --verbose'
         } 
       }
     
@@ -17,7 +18,8 @@ pipeline {
     stage('Deploy') {
       steps {
         echo 'Deploying....'
-        sh 'npm start'  
+        sh 'ls'
+        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve &'  
       }
     }
   }
