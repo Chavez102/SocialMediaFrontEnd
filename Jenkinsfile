@@ -19,7 +19,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         sh 'ls'
-        sh 'nohup ng serve &'  
+        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve &'  
       }
     }
   }
