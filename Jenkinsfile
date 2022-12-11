@@ -18,7 +18,8 @@ pipeline {
     stage('Deploy') {
       steps {
         echo 'Deploying....'
-        sh 'npx npm@6 start'  
+        sh 'ls'
+        sh 'nohup ng serve &'  
       }
     }
   }
