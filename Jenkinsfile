@@ -19,7 +19,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         sh 'ls'
-        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve --host=0.0.0.0 --disable-host-check &'  
+        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve --host=0.0.0.0 &'  
       }
     }
   }
