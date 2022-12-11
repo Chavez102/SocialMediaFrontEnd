@@ -7,6 +7,7 @@ pipeline {
         echo 'Building..'
         sh 'ls'
           sh 'npx npm@6 install --verbose'
+          sh 'ng build --prod'
         } 
       }
     
@@ -19,7 +20,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         sh 'ls'
-        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve &'  
+        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve --prod &'  
       }
     }
   }
