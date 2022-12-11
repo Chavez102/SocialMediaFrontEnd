@@ -20,7 +20,7 @@ pipeline {
         echo 'Deploying....'
         sh 'ls'
         sh 'pwd'
-        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve --host=144.62.209.192 disable-host-check > ~/mylogs.out 2>&1 &'
+        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve > ~/mylogs.out 2>&1 &'
       }
     }
   }
