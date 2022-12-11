@@ -19,7 +19,7 @@ pipeline {
       steps {
         echo 'Deploying....'
         sh 'ls'
-        sh 'ng serve'  
+        sh 'nohup ng serve &'  
       }
     }
   }
