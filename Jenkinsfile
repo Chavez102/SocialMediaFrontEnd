@@ -20,7 +20,7 @@ pipeline {
         echo 'Deploying....'
         sh 'ls'
         sh 'pwd'
-        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve --host=0.0.0.0 &'  
+        sh 'JENKINS_NODE_COOKIE=dontKillMe nohup ng serve --host=0.0.0.0 > mylogs.out 2>&1 &'
       }
     }
   }
