@@ -38,6 +38,7 @@ export class PostFeedPageComponent implements OnInit {
 			this.posts = response
 				.filter((post) => post.comment == false)
 				.sort((postA, postB) => postB.id - postA.id);
+				
 		});
 
 		this.authService.retrieveUser().subscribe((response) => {
@@ -50,6 +51,11 @@ export class PostFeedPageComponent implements OnInit {
 	};
 
 	submitPost = (e: any) => {
+		if(this.postForm.value.imageUrl?.includes('www.youtube.com')){
+			let urlLength= this.postForm.value.imageUrl.length;  
+			let videoID=this.postForm.value.imageUrl.substring(urlLength-11)  //last 11 characters should be the id of video
+			this.postForm.get('imageUrl')?.setValue(`https://www.youtube.com/embed/${videoID}`); 
+		}
 		e.preventDefault();
 		const Filter = require("leo-profanity");
 		this.postService

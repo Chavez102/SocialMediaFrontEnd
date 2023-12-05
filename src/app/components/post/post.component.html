@@ -2,18 +2,42 @@
 	<mat-card>
 		<mat-card-header>
 			<div mat-card-avatar class="header-image"></div>
+			<div id="userGroup">
 			<mat-card-title
-				>{{ post.author.firstName }}
-				{{ post.author.lastName }}</mat-card-title
+				>{{ post?.author?.firstName }}
+				{{ post?.author?.lastName }}</mat-card-title
 			>
-			<mat-card-subtitle>{{ post.author.email }}</mat-card-subtitle>
+			<div class= "link" *ngIf="currentUser?.email == post?.author?.email">
+				<mat-card-subtitle><a href='/profile'>{{ post?.author?.email }}</a></mat-card-subtitle>
+			</div>
+			<div class = "link" *ngIf="currentUser?.email !== post?.author?.email">
+				<mat-card-subtitle><a href='/friend-profile/{{post?.author?.email}}'>{{ post?.author?.email }}</a></mat-card-subtitle>
+			</div>
+		</div>
 		</mat-card-header>
-		<img
-			mat-card-image
-			*ngIf="post.imageUrl"
-			src="{{ post.imageUrl }}"
-			alt="Post Image"
-		/>
+ 
+		<div *ngIf="post.imageUrl">
+			
+			<img
+				mat-card-image
+				*ngIf="isURLVideo() === false"
+				src="{{ post.imageUrl }}"
+				alt="Post Image"
+			/>
+
+			<iframe 
+				*ngIf="isURLVideo() === true"
+				width="100%" 
+				height="500" 
+				[src]="videoURLSafe"
+				passive = "true"
+				frameborder="0" 
+				allowfullscreen
+				sandbox ="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"
+			></iframe>
+
+		</div>
+		
 		<mat-card-content>
 			<p>
 				{{ post.text }}
@@ -28,6 +52,10 @@
 			</div>
 		</mat-card-content>
 		<mat-card-actions align="end">
+			{{likecount}}
+<button id="likeButton{{postid}}" mat-icon-button [color]=this.palleteColor aria-label="Example icon button with a heart icon" (click)="change()" >
+<mat-icon>favorite</mat-icon>
+ </button>
 			<button *ngIf="post?.author?.id === currentUser?.id" mat-raised-button color="warn" (click)="deletePost(post)">
 				Delete
 			</button>
@@ -38,7 +66,7 @@
 			>
 				Reply
 			</button>
-			<button class = "edit" mat-raised-button color="primary" (click)="toggleEditPost()" >Edit</button>
+			<button class = "edit" *ngIf="post?.author?.id === currentUser?.id" mat-raised-button color="primary" (click)="toggleEditPost()" >Edit</button>
 
 		</mat-card-actions>
 		<form

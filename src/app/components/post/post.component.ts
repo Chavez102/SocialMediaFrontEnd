@@ -1,11 +1,16 @@
-import { outputAst } from "@angular/compiler";
-import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
+import { createInjectableType, outputAst } from "@angular/compiler";
+import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef } from "@angular/core";
 import { FormControl, FormGroup } from "@angular/forms";
 import Post from "src/app/models/Post";
 import User from "src/app/models/User";
 import { AuthService } from "src/app/services/auth.service";
 import { PostService } from "src/app/services/post.service";
+import { LikesModel } from "src/app/models/likes";
 import "leo-profanity";
+import { HttpClient } from "@angular/common/http";
+import { LikesService } from "src/app/services/likes.service"; 
+import { environment } from "src/environments/environment"; 
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 
 @Component({
 	selector: "app-post",
@@ -27,6 +32,10 @@ export class PostComponent implements OnInit {
 
 	@Input()
 	currentUser: User;
+	likeModel: any = {};
+
+	videoURLSafe: SafeResourceUrl;
+
 	public set value(user: User) {
 		this.currentUser = user;
 	}
@@ -36,10 +45,76 @@ export class PostComponent implements OnInit {
 
 	constructor(
 		private postService: PostService,
-		private authService: AuthService
+		private authService: AuthService,
+		private http : HttpClient,
+		private likes : LikesService,
+		public sanitizer: DomSanitizer
 	) {}
 
-	ngOnInit(): void {}
+
+	isURLVideo():boolean{ 
+		return this.post.imageUrl.includes('https://www.youtube.com/embed/');
+	}
+	
+	palleteColor = "primary";	
+	likecount? : number;
+	canLike? : boolean;
+	postid? : number;
+	userLiked? : any[];
+		
+	getLikes(){
+		
+		this.http.get( `${environment.baseUrl}/likes/getlikes/${this.postid}`, {withCredentials: true ,observe : "response"}).subscribe(
+			  (res : any ) => {
+
+				this.likecount = res.body.length;
+				this.userLiked = res.body;
+
+			},
+			err => {
+				console.log(err);
+
+			}
+		)
+	}
+
+	change() {
+		this.palleteColor = "warn"
+		let element = document.getElementById(`likeButton${this.postid}`);
+		element?.setAttribute("disabled", "true");
+
+		this.likeModel.likedBy = this.currentUser.email;
+		this.likeModel.postID = this.post.id;
+		this.postid = this.post.id;
+
+		this.likes.updateLikes(this.likeModel).subscribe
+			((data) => {
+				this.getLikes();
+			},
+				(error) => {
+					console.log(error);
+
+				}
+			)
+	}
+
+
+
+	ngOnInit(): void {
+		this.videoURLSafe= this.sanitizer.bypassSecurityTrustResourceUrl(this.post.imageUrl);
+		this.postid = this.post.id
+		this.getLikes();
+		let matchedUser = null;
+		setTimeout(() => {
+			matchedUser = this.userLiked?.find((like) => like.likedBy == this.currentUser.email)
+
+			if (matchedUser) {
+				let element = document.getElementById(`likeButton${this.postid}`);
+				element?.setAttribute("disabled", "true");
+				this.palleteColor = "warn"
+			}
+		}, 100)
+	}
 
 	toggleReplyToPost = () => {
 		this.replyToPost = !this.replyToPost;
@@ -91,11 +166,12 @@ export class PostComponent implements OnInit {
 		const Filter = require("leo-profanity");
 		let newPost = new Post(
 			this.post.id,
-			Filter.clean(this.commentForm.value.text || ""),
+			Filter.clean(this.postForm.value.text || ""),
 			this.postForm.value.imageUrl || "",
-			this.authService.currentUser,
+			this.currentUser,
 			this.post.comments,
 			false
+
 		);
 		this.postService.updatePost(newPost).subscribe((response) => {
 			this.post = response;
